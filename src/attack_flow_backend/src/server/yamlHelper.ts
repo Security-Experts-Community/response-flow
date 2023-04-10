@@ -16,7 +16,7 @@ export function searchRecursive(dir: string, pattern: string) {
       }
   
       if (stat.isFile() && dirInner.endsWith(pattern)) {
-        results.push(YAML.parse(fs.readFileSync(dirInner, 'utf8')))
+        results.push({path: dirInner, data: YAML.parse(fs.readFileSync(dirInner, 'utf8'))})
       }
     })
     return results
