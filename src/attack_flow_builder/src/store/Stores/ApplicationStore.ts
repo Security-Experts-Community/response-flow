@@ -5,9 +5,9 @@ import { AppCommand } from "@/store/Commands/AppCommand";
 import { PageCommand } from "@/store/Commands/PageCommand";
 import { DiagramObjectModel } from "@/assets/scripts/BlockDiagram";
 import { ValidationErrorResult, ValidationWarningResult } from "@/assets/scripts/DiagramValidator";
-import { ModuleStore, ApplicationStore, BaseAppSettings } from "@/store/StoreTypes"
+import {ModuleStore, ApplicationStore, BaseAppSettings, BaseErmackContent} from "@/store/StoreTypes"
 
-const Publisher = Configuration.publisher ? 
+const Publisher = Configuration.publisher ?
     new Configuration.publisher() : undefined;
 
 const DummyPage = PageEditor.createDummy();
@@ -19,7 +19,8 @@ export default {
         clipboard: [],
         publisher: Publisher,
         pages: new Map([[ DummyPage.id, DummyPage ]]),
-        activePage: DummyPage
+        activePage: DummyPage,
+        ermackContent: BaseErmackContent
     },
     getters: {
 
@@ -108,7 +109,7 @@ export default {
         getValidationErrors(state): ValidationErrorResult[] {
             let p = state.activePage;
             // Use trigger to trip the reactivity system
-            return (state.activePage.trigger.value ? p : p).getValidationErrors(); 
+            return (state.activePage.trigger.value ? p : p).getValidationErrors();
         },
 
         /**
@@ -131,7 +132,7 @@ export default {
         /**
          * Executes an application command.
          * @param state
-         *  The Vuex state. 
+         *  The Vuex state.
          * @param command
          *  The application command.
          */

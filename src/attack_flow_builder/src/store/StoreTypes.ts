@@ -28,7 +28,8 @@ export type ApplicationStore = {
     clipboard: DiagramObjectModel[],
     publisher: DiagramPublisher | undefined,
     pages: Map<string, PageEditor>,
-    activePage: PageEditor
+    activePage: PageEditor,
+    ermackContent: ErmackContent
 }
 
 /**
@@ -45,6 +46,15 @@ export type HotkeyStore = {}
 ///////////////////////////////////////////////////////////////////////////////
 //  2. App Settings  //////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * Base Ermack Content
+ */
+export const BaseErmackContent: ErmackContent = {
+    actions: [],
+    response: []
+}
 
 
 /**
@@ -121,6 +131,15 @@ export const BaseAppSettings: AppSettings = {
             many: ""
         }
     }
+}
+
+/**
+ * Ermack Content
+ * */
+
+export type ErmackContent = {
+    actions: any[],
+    response: any[]
 }
 
 /**
