@@ -13,23 +13,20 @@ app.get("/list", (_, res) => res.json({
   response: searchRecursive(responseDirectory, '.yml'),
 }));
 
-app.get("/create", (_, res) => {
+app.get("/create", (req, res) => {
 
-  const file = __dirname + '/test.yaml';
+  const data: string = String(req.query?.data) || '{}'
+  const path: string = String(req.query?.path) || ''
 
-  fs.writeFile(file, createYaml(), (err) => {
+  fs.writeFile(path, createYaml(JSON.parse(data)), (err) => {
     if (err) {
       console.log(err);
     }
-    res.setHeader('Content-disposition', 'attachment; filename=test.yaml');
-    res.setHeader('Content-type', "application/yaml");
-    const filestream = fs.createReadStream(file);
-    filestream.pipe(res);
-  });
+  })
 
-  
+  return res.sendStatus(200)
 })
 
-ViteExpress.listen(app, 3000, () =>
-  console.log("Server is listening on port 3000...")
+ViteExpress.listen(app, 3001, () =>
+  console.log("Server is listening on port 3001...")
 );
