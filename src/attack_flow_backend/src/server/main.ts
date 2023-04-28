@@ -3,10 +3,17 @@ import ViteExpress from "vite-express";
 import dotenv from "dotenv";
 import { searchRecursive, createYaml } from "./yamlHelper";
 import fs from "fs";
+import cors from 'cors';
 
 const app = express();
 const actionDirectory = dotenv.config().parsed?.actionDirectory ?? '';
 const responseDirectory = dotenv.config().parsed?.responseDirectory ?? '';
+
+
+app.use(cors({
+  origin: '*',
+  optionsSuccessStatus: 200
+}));
 
 app.get("/list", (_, res) => res.json({
   actions: searchRecursive(actionDirectory, '.yml'),
@@ -27,6 +34,6 @@ app.get("/create", (req, res) => {
   return res.sendStatus(200)
 })
 
-ViteExpress.listen(app, 3001, () =>
-  console.log("Server is listening on port 3001...")
+ViteExpress.listen(app, 3000, () =>
+  console.log("Server is listening on port 3000...")
 );

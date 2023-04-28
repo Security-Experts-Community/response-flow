@@ -9,10 +9,10 @@ services:
     volumes:
       - ./:/data
     ports:
-        - 3001:3001
+        - 3000:3000
     command: /bin/sh -c "cd /data/src/attack_flow_backend && npm i && npm run start"
     expose:
-      - "3001"
+      - "3000"
   node:
     container_name: attackflow_client
     network_mode: bridge

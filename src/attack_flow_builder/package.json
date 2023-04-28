@@ -16,9 +16,9 @@
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "@types/resize-observer-browser": "^0.1.7",
-    "@vue/cli-plugin-typescript": "^5.0.8",
+    "@vue/cli-plugin-typescript": "~4.5.15",
     "@vue/cli-plugin-vuex": "~4.5.15",
-    "@vue/cli-service": "^5.0.8",
+    "@vue/cli-service": "~4.5.15",
     "@vue/compiler-sfc": "^3.0.0",
     "d3": "^7.4.4",
     "eslint": "^8.38.0",
