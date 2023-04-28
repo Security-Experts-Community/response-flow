@@ -1,5 +1,6 @@
 export * from "./CopySelectedChildren";
 export * from "./LoadFile";
+export * from "./LoadErmack";
 export * from "./LoadSettings";
 export * from "./OpenHyperlink";
 export * from "./PublishPageToDevice";

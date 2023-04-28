@@ -1,68 +1,80 @@
 <template>
-  <FocusBox
-    :class="['enum-field-control', { disabled, open: showMenu }]"
-    @focus="openMenu"
-    @unfocus="closeMenu"
-  >
-    <div class="grid-container">
-      <!-- Value Text -->
-      <div class="value-container">
-        <div :class="['value-text', { 'is-null': isNull }]">
-          {{ _property.toString() }}
+    <FocusBox
+            :class="['enum-field-control', { disabled, open: showMenu }]"
+            @focus="openMenu"
+            @unfocus="closeMenu"
+    >
+        <div class="grid-container">
+            <!-- Value Text -->
+            <div class="value-container">
+                <div :class="['value-text', { 'is-null': isNull }]">
+                    {{ _property.toString() }}
+                </div>
+                <div class="dropdown-arrow" v-if="!disabled">▼</div>
+            </div>
+            <!-- Dropdown Options -->
+            <ScrollBox :propagateScroll="false" :style="style" v-if="showMenu">
+                <input type="text" class="option-search" v-model="searchOption">
+                <ul class="dropdown-options">
+                    <li
+                            :class="[{ active: hovered === 'null' }, 'null']"
+                            @mouseenter="hovered = 'null'"
+                            @click.stop="updateProperty(null)"
+                    >
+                        Null
+                    </li>
+                    <li
+                            v-for="option in filteredOptionList"
+                            :key="option.key"
+                            :class="{ active: hovered === option.key }"
+                            @mouseenter="hovered = option.key"
+                            @click.stop="updateProperty(option.key)"
+                    >
+                        {{ option.value }}
+                    </li>
+                </ul>
+            </ScrollBox>
         </div>
-        <div class="dropdown-arrow" v-if="!disabled">▼</div>
-      </div>
-      <!-- Dropdown Options -->
-      <ScrollBox :propagateScroll="false" :style="style" v-if="showMenu">
-        <ul class="dropdown-options">
-          <li 
-            :class="[{ active: hovered === 'null' }, 'null']"
-            @mouseenter="hovered = 'null'"
-            @click.stop="updateProperty(null)"
-          >
-            Null
-          </li>
-          <li 
-            v-for="[k, v] in options" :key="k"
-            :class="{ active: hovered === k }"
-            @mouseenter="hovered = k"
-            @click.stop="updateProperty(k)"
-          >
-            {{ v.toString() }}
-          </li>
-        </ul>
-      </ScrollBox>
-    </div>
-  </FocusBox>
+    </FocusBox>
 </template>
 
 <script lang="ts">
 // Dependencies
-import { EnumProperty, Property } from "@/assets/scripts/BlockDiagram";
-import { defineComponent, PropType } from "vue";
+import {EnumProperty, PageModel, Property} from "@/assets/scripts/BlockDiagram";
+import {defineComponent, PropType} from "vue";
 // Components
 import FocusBox from "@/components/Containers/FocusBox.vue";
 import ScrollBox from "@/components/Containers/ScrollBox.vue";
+import {mapState} from "vuex";
+import * as Store from "@/store/StoreTypes";
+import {ErmackContent} from "@/store/StoreTypes";
 
 export default defineComponent({
   name: "EnumField",
   props: {
     property: {
       type: Object as PropType<EnumProperty>,
-      required: true
+      required: true,
     },
     maxHeight: {
       type: Number,
-      default: 200
-    }
+      default: 200,
+    },
   },
   data() {
     return {
       hovered: "",
-      showMenu: false
+      showMenu: false,
+      searchOption: '',
     }
   },
   computed: {
+
+    ...mapState("ApplicationStore", {
+      ermackContent(state: Store.ApplicationStore): ErmackContent {
+        return state.ermackContent;
+      },
+    }),
 
     /**
      * A reactive version of the property.
@@ -71,13 +83,13 @@ export default defineComponent({
      */
     _property(): EnumProperty {
       let trigger = this.property.trigger.value;
-      return trigger ? this.property : this.property; 
+      return trigger ? this.property : this.property;
     },
 
     /**
      * Tests if the property is disabled.
      * @returns
-     *  True if the property is disabled, false otherwise. 
+     *  True if the property is disabled, false otherwise.
      */
     disabled(): boolean {
       return !(this._property.descriptor.is_editable ?? true);
@@ -92,6 +104,37 @@ export default defineComponent({
       return this._property.options.value;
     },
 
+    optionList(): { key: string; value: string; }[] {
+      const optionList: { key: string; value: string; }[] = [];
+        console.log(this._property.options.value);
+        this._property.options.value.forEach((value, key) => {
+        optionList.push({
+          key,
+          value: value.toString(),
+        });
+      });
+
+      if (this.property.root?.primaryKey === 'custom') {
+        // console.log();
+        // const ermackList: { key: string; value: string; }[] = [];
+        // [...this.ermackContent.actions, ...this.ermackContent.response].forEach((value, key) => {
+        //     optionList.push({
+        //         key,
+        //         value: value.toString(),
+        //     });
+        // });
+
+        return optionList;
+      } else {
+        return optionList;
+      }
+    },
+
+    filteredOptionList() {
+      return this.optionList.filter(post => {
+        return post.value.toLowerCase().includes(this.searchOption.toLowerCase())
+      })
+    },
     /**
      * Tests if the property's value is null.
      * @returns
@@ -107,20 +150,19 @@ export default defineComponent({
      *  The scrollbox's style.
      */
     style(): { maxHeight: string } {
-      return { maxHeight: `${ this.maxHeight }px` };
-    }
+      return {maxHeight: `${this.maxHeight}px`};
+    },
 
   },
   methods: {
-    
     /**
      * Opens the options menu.
      */
     openMenu() {
-      if(this.disabled) {
+      if (this.disabled) {
         return;
       }
-      this.showMenu = true;      
+      this.showMenu = true;
     },
 
     /**
@@ -139,7 +181,7 @@ export default defineComponent({
      *  The property's new value.
      */
     updateProperty(value: string | null) {
-      if(this._property.toRawValue() !== value) {
+      if (this._property.toRawValue() !== value) {
         // Update property
         this.$emit("change", this._property, value);
       } else {
@@ -148,6 +190,7 @@ export default defineComponent({
       }
       // Close menu
       this.showMenu = false;
+      this.searchOption = "";
     },
 
     /**
@@ -156,18 +199,17 @@ export default defineComponent({
     refreshValue() {
       this.hovered = this._property.toRawValue() ?? "null"
     }
-    
   },
   emits: ["change"],
   watch: {
     "_property.trigger.value"() {
       this.refreshValue();
-    }
+    },
   },
   mounted() {
     this.refreshValue();
   },
-  components: { FocusBox, ScrollBox }
+  components: {FocusBox, ScrollBox},
 });
 </script>
 
@@ -176,96 +218,109 @@ export default defineComponent({
 /** === Main Field === */
 
 .enum-field-control {
-  display: flex;
-  align-items: center;
-  color: #cccccc;
+    display: flex;
+    align-items: center;
+    color: #cccccc;
 }
 
 .enum-field-control.open {
-  border: solid 1px #3d3d3d;
+    border: solid 1px #3d3d3d;
 }
 
 .grid-container {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, auto);
-  width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, auto);
+    width: 100%;
 }
 
 /** === Value Text === */
 
 .value-container {
-  grid-area: 1 / 1;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }
 
 .disabled .value-container {
-  cursor: inherit;
+    cursor: inherit;
 }
 
 .value-text {
-  flex: 1;
-  user-select: none;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 6px 12px;
-  overflow: hidden;
+    flex: 1;
+    user-select: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 6px 12px;
+    overflow: hidden;
 }
 
 .value-text.is-null {
-  color: #999;
+    color: #999;
 }
 
 .value-text:not(.is-null) {
-  color: #89a0ec;
-  font-weight: 500;
+    color: #89a0ec;
+    font-weight: 500;
 }
 
 .dropdown-arrow {
-  color: #666666;
-  font-size: 6pt;
-  font-family: "Inter", sans-serif;
-  text-align: center;
-  user-select: none;
-  width: 16px;
-  padding-right: 8px;
+    color: #666666;
+    font-size: 6pt;
+    font-family: "Inter", sans-serif;
+    text-align: center;
+    user-select: none;
+    width: 16px;
+    padding-right: 8px;
 }
 
 /** === Dropdown Options === */
 
 .scrollbox-container {
-  grid-area: 2 / 1;
-  border-top: dotted 1px #3d3d3d;;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  box-sizing: border-box;
-  background: #242424;
+    grid-area: 2 / 1;
+    border-top: dotted 1px #3d3d3d;;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-sizing: border-box;
+    background: #242424;
 }
 
 .dropdown-options {
-  padding: 6px 5px;
+    padding: 6px 5px;
 }
 
 .dropdown-options li {
-  list-style: none;
-  font-size: 10pt;
-  user-select: none;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 5px 12px;
-  overflow: hidden;
+    list-style: none;
+    font-size: 10pt;
+    user-select: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 5px 12px;
+    overflow: hidden;
 }
 
 .dropdown-options li.active,
 .dropdown-options li.active.null {
-  color: #fff;
-  background: #726de2;
+    color: #fff;
+    background: #726de2;
 }
 
 .dropdown-options li.null {
-  color: #999;
+    color: #999;
+}
+
+.option-search {
+    width: 85%;
+    margin: 6px 10px;
+    padding: 0 10px;
+    height: 23px;
+    background: #3d3d3d;
+    outline: 1px solid #9e9e9e;
+    border: none;
+    border-radius: 2px;
+    color: #d9d9d9;
+    font-size: 15px;
 }
 
 </style>
