@@ -161,40 +161,66 @@ export default defineComponent({
 
         const actions: any[] = [];
         ermackContent.actions.forEach((action: any, index: number) => {
+            const getArrayData = (data: any) => {
+                if(data && typeof data === "object"){
+                    return data.join(";")
+                }
+                return ""
+            }
+            const getTitle = (title: any) => {
+                if (typeof title === "object") {
+                    return title.en.toLowerCase().split(' ').join('-');
+                }
+                return title.toLowerCase().split(' ').join('-');
+            }
             const ermackAction = [
-                action.data.title.toLowerCase().split(' ').join('-'),
+                getTitle(action.data.title),
                 {
                     id: action.data.id,
                     text: action.data.title,
-                    value: index * 10
+                    value: index * 10,
+                    data: {
+                        ...action.data,
+                        tags: getArrayData(action.data.tags)
+                    },
+                    path: action.path
                 }
             ];
 
             actions.push(ermackAction);
         });
 
-        const response: any[] = [];
-        ermackContent.response.forEach((resp: any, index: number) => {
+        const resource: any[] = [];
+        ermackContent.resource.forEach((resp: any, index: number) => {
             const getTitle = (title: any) => {
                 if (typeof title === "object") {
                     return title.en.toLowerCase().split(' ').join('-');
-                } else {
-                    return title.toLowerCase().split(' ').join('-');
                 }
+                return title.toLowerCase().split(' ').join('-');
             }
-            const ermackResponse = [
+            const getArrayData = (data: any) => {
+                if(data && typeof data === "object"){
+                    return data.join(";")
+                }
+                return ""
+            }
+            const ermackResource = [
                 getTitle(resp.data.title),
                 {
                     id: resp.data.id,
                     text: resp.data.title,
-                    value: index * 10
+                    value: index * 10,
+                    data: {
+                        ...resp.data,
+                        mapping: getArrayData(resp.data.mapping),
+                        references: getArrayData(resp.data.references)
+                    },
+                    path: resp.path
                 }
             ];
 
-            response.push(ermackResponse);
+            resource.push(ermackResource);
         });
-
-        console.log({resources: actions, response});
 
         Configuration.schema.templates.push({
                 id: "resource",
@@ -202,7 +228,43 @@ export default defineComponent({
                 type: TemplateType.DictionaryBlock,
                 role: SemanticRole.Node,
                 properties: {
-                    custom: {
+                    resource: {
+                        type: PropertyType.Enum,
+                        is_primary: true,
+                        is_required: true,
+                        options: {
+                            type: PropertyType.List,
+                            form: {
+                                type: PropertyType.Dictionary,
+                                form: {
+                                    text: {type: PropertyType.String, is_primary: true},
+                                    value: {type: PropertyType.Int}
+                                }
+                            },
+                            value: [...resource]
+                        },
+                        value: null
+                    },
+                    title: {type: PropertyType.String},
+                    id: {type: PropertyType.String},
+                    description: {type: PropertyType.String},
+                    author: {type: PropertyType.String},
+                    creation_date: {type: PropertyType.String},
+                    modification_date: {type: PropertyType.String},
+                    references: {type: PropertyType.String},
+                    mapping: {type: PropertyType.String},
+                    extended_description: {type: PropertyType.String},
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.DictionaryBlock({head: {...Colors.Blue}})
+            },
+            {
+                id: "response_action", //response action
+                namespace: "attack_flow.response",
+                type: TemplateType.DictionaryBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    action: {
                         type: PropertyType.Enum,
                         is_primary: true,
                         is_required: true,
@@ -219,46 +281,22 @@ export default defineComponent({
                         },
                         value: null
                     },
-                    field1: {type: PropertyType.String},
-                    field2: {type: PropertyType.String},
-                    field3: {type: PropertyType.String},
-                },
-                anchor_template: "@__builtin__anchor",
-                style: DarkTheme.DictionaryBlock({head: {...Colors.Blue}})
-            },
-            {
-                id: "response_action", //response action
-                namespace: "attack_flow.response",
-                type: TemplateType.DictionaryBlock,
-                role: SemanticRole.Node,
-                properties: {
-                    custom: {
-                        type: PropertyType.Enum,
-                        is_primary: true,
-                        is_required: true,
-                        options: {
-                            type: PropertyType.List,
-                            form: {
-                                type: PropertyType.Dictionary,
-                                form: {
-                                    text: {type: PropertyType.String, is_primary: true},
-                                    value: {type: PropertyType.Int}
-                                }
-                            },
-                            value: [...response]
-                        },
-                        value: null
-                    },
-                    field1: {type: PropertyType.String},
-                    field2: {type: PropertyType.String},
-                    field3: {type: PropertyType.String},
+                    title: {type: PropertyType.String},
+                    id: {type: PropertyType.String},
+                    description: {type: PropertyType.String},
+                    author: {type: PropertyType.String},
+                    creation_date: {type: PropertyType.String},
+                    tags: {type: PropertyType.String},
+                    stage: {type: PropertyType.String},
+                    extended_description: {type: PropertyType.String},
+                    workflow: {type: PropertyType.String},
                 },
                 anchor_template: "@__builtin__anchor",
                 style: DarkTheme.DictionaryBlock({head: {...Colors.Blue}})
             }
         );
 
-        this.execute(new LoadErmack(this.context, {actions, response}));
+        this.execute(new LoadErmack(this.context, {actions, resource}));
 
         // Load settings
         this.execute(new LoadSettings(this.context, settings));

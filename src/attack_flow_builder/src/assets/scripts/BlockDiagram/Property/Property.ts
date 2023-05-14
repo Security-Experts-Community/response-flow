@@ -97,7 +97,6 @@ export abstract class Property {
             case PropertyType.List:
                 return new ListProperty(parent, descriptor, values);
             case PropertyType.Dictionary:
-                console.log(parent, descriptor, values);
                 return new DictionaryProperty(parent, descriptor, values);
         }
     }

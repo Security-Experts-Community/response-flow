@@ -53,7 +53,7 @@ export type HotkeyStore = {}
  */
 export const BaseErmackContent: ErmackContent = {
     actions: [],
-    response: []
+    resource: []
 }
 
 
@@ -139,7 +139,7 @@ export const BaseAppSettings: AppSettings = {
 
 export type ErmackContent = {
     actions: any[],
-    response: any[]
+    resource: any[]
 }
 
 /**

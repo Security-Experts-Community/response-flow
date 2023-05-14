@@ -2,13 +2,15 @@ import express from "express";
 import ViteExpress from "vite-express";
 import dotenv from "dotenv";
 import { searchRecursive, createYaml } from "./yamlHelper";
+// import { searchRecursive } from "./yamlHelper";
 import fs from "fs";
 import cors from 'cors';
+import bodyParser from "body-parser"
 
 const app = express();
 const actionDirectory = dotenv.config().parsed?.actionDirectory ?? '';
-const responseDirectory = dotenv.config().parsed?.responseDirectory ?? '';
-
+const resourceDirectory = dotenv.config().parsed?.resourceDirectory ?? '';
+const jsonParser = bodyParser.json()
 
 app.use(cors({
   origin: '*',
@@ -17,21 +19,35 @@ app.use(cors({
 
 app.get("/list", (_, res) => res.json({
   actions: searchRecursive(actionDirectory, '.yml'),
-  response: searchRecursive(responseDirectory, '.yml'),
+  resource: searchRecursive(resourceDirectory, '.yml'),
 }));
 
-app.get("/create", (req, res) => {
+app.post("/create", jsonParser,  (req, res) => {
 
-  const data: string = String(req.query?.data) || '{}'
-  const path: string = String(req.query?.path) || ''
+  let data = {}
 
-  fs.writeFile(path, createYaml(JSON.parse(data)), (err) => {
+  if(req.body.type === "attack_flow.resource"){
+    data = {
+      ...req.body.data,
+      mapping: req.body.data.mapping.split(";"),
+      references: req.body.data.references.split(";"),
+    }
+  }
+
+  if(req.body.type === "attack_flow.response"){
+    data = {
+      ...req.body.data,
+      tags: req.body.data.tags ? req.body.data.tags.split(";") : "",
+    }
+  }
+
+  fs.writeFile(req.body.path, createYaml(data), (err) => {
     if (err) {
       console.log(err);
     }
   })
 
-  return res.sendStatus(200)
+  return res.json(req.body)
 })
 
 ViteExpress.listen(app, 3000, () =>
