@@ -22,15 +22,6 @@ export function searchRecursive(dir: string, pattern: string) {
     return results
 }
 
-export function createYaml(){
-  return YAML.stringify({
-    title: "title",
-    id: "01",
-    description: "description",
-    references: [
-      'https://d3fend.mitre.org/dao/artifact/d3f:DomainUserAccount/',
-      'https://d3fend.mitre.org/dao/artifact/d3f:DomainUserAccount/2'
-    ]
-
-  })
+export function createYaml(data: Record<string, any>){
+  return YAML.stringify(data)
 }

@@ -106,7 +106,6 @@ export default defineComponent({
 
     optionList(): { key: string; value: string; }[] {
       const optionList: { key: string; value: string; }[] = [];
-        console.log(this._property.options.value);
         this._property.options.value.forEach((value, key) => {
         optionList.push({
           key,

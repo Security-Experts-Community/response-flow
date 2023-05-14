@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: attackflow_backend
+    network_mode: bridge
+    image: node:16
+    restart: always
+    volumes:
+      - ./:/data
+    ports:
+        - 3000:3000
+    command: /bin/sh -c "cd /data/src/attack_flow_backend && npm i && npm run start"
+    expose:
+      - "3000"
+  node:
+    container_name: attackflow_client
+    network_mode: bridge
+    image: node:16.15.1
+    restart: always
+    volumes:
+      - ./:/data
+    ports:
+        - 8080:8080
+    command: /bin/sh -c "cd /data/src/attack_flow_builder && npm i && npm run serve"
+    expose:
+      - "8080"

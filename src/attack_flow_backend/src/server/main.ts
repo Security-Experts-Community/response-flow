@@ -2,32 +2,52 @@ import express from "express";
 import ViteExpress from "vite-express";
 import dotenv from "dotenv";
 import { searchRecursive, createYaml } from "./yamlHelper";
+// import { searchRecursive } from "./yamlHelper";
 import fs from "fs";
+import cors from 'cors';
+import bodyParser from "body-parser"
 
 const app = express();
 const actionDirectory = dotenv.config().parsed?.actionDirectory ?? '';
-const responseDirectory = dotenv.config().parsed?.responseDirectory ?? '';
+const resourceDirectory = dotenv.config().parsed?.resourceDirectory ?? '';
+const jsonParser = bodyParser.json()
+
+app.use(cors({
+  origin: '*',
+  optionsSuccessStatus: 200
+}));
 
 app.get("/list", (_, res) => res.json({
   actions: searchRecursive(actionDirectory, '.yml'),
-  response: searchRecursive(responseDirectory, '.yml'),
+  resource: searchRecursive(resourceDirectory, '.yml'),
 }));
 
-app.get("/create", (_, res) => {
+app.post("/create", jsonParser,  (req, res) => {
 
-  const file = __dirname + '/test.yaml';
+  let data = {}
 
-  fs.writeFile(file, createYaml(), (err) => {
+  if(req.body.type === "attack_flow.resource"){
+    data = {
+      ...req.body.data,
+      mapping: req.body.data.mapping.split(";"),
+      references: req.body.data.references.split(";"),
+    }
+  }
+
+  if(req.body.type === "attack_flow.response"){
+    data = {
+      ...req.body.data,
+      tags: req.body.data.tags ? req.body.data.tags.split(";") : "",
+    }
+  }
+
+  fs.writeFile(req.body.path, createYaml(data), (err) => {
     if (err) {
       console.log(err);
     }
-    res.setHeader('Content-disposition', 'attachment; filename=test.yaml');
-    res.setHeader('Content-type', "application/yaml");
-    const filestream = fs.createReadStream(file);
-    filestream.pipe(res);
-  });
+  })
 
-  
+  return res.json(req.body)
 })
 
 ViteExpress.listen(app, 3000, () =>
