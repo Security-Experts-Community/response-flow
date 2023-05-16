@@ -23,6 +23,67 @@ app.get("/list", (_, res) => res.json({
 }));
 
 app.post("/create", jsonParser,  (req, res) => {
+  let data = {}
+
+  if(req.body.type === "attack_flow.resource"){
+    data = {
+      ...req.body.data,
+      mapping: req.body.data.mapping.split(";"),
+      references: req.body.data.references.split(";"),
+    }
+  }
+
+  if(req.body.type === "attack_flow.response"){
+    data = {
+      ...req.body.data,
+      tags: req.body.data.tags ? req.body.data.tags.split(";") : "",
+    }
+  }
+
+  try{
+    let name = ""
+    let path = ""
+
+    if(req.body.type === "attack_flow.resource"){
+      name = req.body.data.id.slice(0,1) + "_" + req.body.data.id.slice(1) + "_" + req.body.data.title.toLowerCase().split(" ").join("_")
+      path = '/' + name
+
+      if (!fs.existsSync(resourceDirectory + path)){
+          fs.mkdirSync(resourceDirectory + path);
+      }
+
+      fs.writeFile(resourceDirectory + path + `/${name}.yml`, createYaml(data), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      })
+    }
+
+    if(req.body.type === "attack_flow.response"){
+      name = req.body.data.title.split(" ").join("_")
+      path = '/' + name
+
+      if (!fs.existsSync(actionDirectory + path)){
+        fs.mkdirSync(actionDirectory + path);
+      }
+
+      fs.writeFile(actionDirectory + path + `/${name}.yml`, createYaml(data), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      })
+    }
+
+    console.log(req.body)
+    res.status(200).send()
+  }catch(e){
+    console.log(e)
+
+    res.status(500).send()
+  }
+})
+
+app.post("/update", jsonParser,  (req, res) => {
 
   let data = {}
 
