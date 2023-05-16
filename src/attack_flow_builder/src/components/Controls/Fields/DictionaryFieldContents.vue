@@ -68,8 +68,8 @@ export default defineComponent({
     },
     
     buttonType(){
-      if(this.isSave){
-        return 'Save'
+      if(this.isCreate){
+        return 'Create'
       }
 
       return 'Edit'
@@ -86,7 +86,7 @@ export default defineComponent({
       );
     },
     
-    isSave(): boolean {
+    isCreate(): boolean {
       const [custom] = this.values as any
       return custom._value === null 
     }
@@ -157,19 +157,26 @@ export default defineComponent({
     },
 
     async submit(){
-      if(this.isSave){
+      const skipField = ['action', 'resource']
+      const data = {data: {}, path: this.custom, type: this.namespace }
+      Array.from(this.property.value).forEach((item) => {
+        if(!skipField.includes(item[0])){
+          //@ts-ignore
+          data.data[item[0]] = item[1]._value
+        }
+      })
 
-      }else{
-        const skipField = ['action', 'resource']
-        const data = {data: {}, path: this.custom, type: this.namespace }
-        Array.from(this.property.value).forEach((item) => {
-          if(!skipField.includes(item[0])){
-            //@ts-ignore
-            data.data[item[0]] = item[1]._value
-          }
-        })
-
+      if(this.isCreate){
         await fetch('http://localhost:3000/create', {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        })
+      }else{
+        await fetch('http://localhost:3000/update', {
           method: "POST",
           body: JSON.stringify(data),
           headers: {
