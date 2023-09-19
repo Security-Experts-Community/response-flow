@@ -211,7 +211,7 @@ export class DictionaryBlockModel extends DiagramObjectModel {
             let headerHeight = Math.round(y);
 
             // Calculate fields
-            if(hasBody) {
+            if(false) {
 
                 // Create field name & value text sets
                 let fieldName: TextSet = {

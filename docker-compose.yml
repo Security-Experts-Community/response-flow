@@ -7,6 +7,7 @@ services:
     image: node:16
     restart: always
     volumes:
+      - ../ERMACK:/data/ermack
       - ./:/data
     ports:
         - 3000:3000
@@ -19,6 +20,7 @@ services:
     image: node:16.15.1
     restart: always
     volumes:
+      - ../ERMACK:/data/ermack
       - ./:/data
     ports:
         - 8080:8080

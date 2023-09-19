@@ -6,6 +6,7 @@ module.exports = {
             alias: {
                 "~": path.resolve(__dirname, "./")
             }
-        }
+        },
+        devtool: "source-map"
     }
 };
