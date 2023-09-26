@@ -19,39 +19,39 @@ import {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-const AttackFlowExtensionId
+export const AttackFlowExtensionId
     = "fb9c968a-745b-4ade-9b25-c324172197f4";
 
-const AttackFlowSchemaUrl
+export const AttackFlowSchemaUrl
     = "https://center-for-threat-informed-defense.github.io/attack-flow/stix/attack-flow-schema-2.0.0.json";
 
-const AttackFlowSchemaVersion
+export const AttackFlowSchemaVersion
     = "2.0.0";
 
-const AttackFlowExtensionCreatedDate
+export const AttackFlowExtensionCreatedDate
     = "2022-08-02T19:34:35.143Z";
 
-const AttackFlowExtensionModifiedDate
+export const AttackFlowExtensionModifiedDate
     = AttackFlowExtensionCreatedDate;
 
-const AttackFlowDocsExternalReference =
+export const AttackFlowDocsExternalReference =
     {
         source_name: "Documentation",
         description: "Documentation for Attack Flow",
         url: "https://center-for-threat-informed-defense.github.io/attack-flow"
     };
 
-const AttackFlowGitHubExternalReference =
+export const AttackFlowGitHubExternalReference =
     {
         source_name: "GitHub",
         description: "Source code repository for Attack Flow",
         url: "https://github.com/center-for-threat-informed-defense/attack-flow"
     };
 
-const AttackFlowExtensionCreatorName
+export const AttackFlowExtensionCreatorName
     = "MITRE Engenuity Center for Threat-Informed Defense";
 
-const AttackFlowSdos
+export const AttackFlowSdos
     = new Set<string>([
         "attack-flow",
         "attack-action",
@@ -60,7 +60,7 @@ const AttackFlowSdos
         "attack-operator"
     ]);
 
-const AttackFlowTemplatesMap: Map<string, string>
+export const AttackFlowTemplatesMap: Map<string, string>
     = new Map([
         ["flow", "attack-flow"],
         ["action", "attack-action"],
@@ -189,7 +189,6 @@ class AttackFlowPublisher extends DiagramPublisher {
     ///////////////////////////////////////////////////////////////////////////
     //  1. Stix Node Creation  ////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-
 
     /**
      * Exports a graph object to an SDO or SCO.
@@ -813,7 +812,7 @@ export default AttackFlowPublisher;
 ///////////////////////////////////////////////////////////////////////////
 
 
-type Sdo = {
+export type Sdo = {
     type         : string,
     id           : string,
     spec_version : string,
@@ -827,7 +826,7 @@ type Sdo = {
     [key: string]: any
 }
 
-type Sro = {
+export type Sro = {
     type              : string,
     id                : string,
     spec_version      : string,
@@ -838,7 +837,7 @@ type Sro = {
     target_ref        : string
 }
 
-type ExtensionSdo = Sdo & {
+export type ExtensionSdo = Sdo & {
     name                : string,
     description         : string,
     created             : string,
@@ -854,7 +853,7 @@ type ExtensionSdo = Sdo & {
     }[]
 }
 
-type ExtensionAuthorSdo = Sdo & {
+export type ExtensionAuthorSdo = Sdo & {
     create_by_ref  : string,
     name           : string,
     identity_class : string,
@@ -866,7 +865,7 @@ type BundleSdo = Sdo & {
     objects : [ExtensionSdo, ExtensionAuthorSdo, ...Sdo[]]
 }
 
-type Link = {
+export type Link = {
     obj: Sdo,
     via: string
 }

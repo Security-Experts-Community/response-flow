@@ -224,7 +224,7 @@ export default defineComponent({
 
         Configuration.schema.templates.push({
                 id: "resource",
-                namespace: "attack_flow.resource",
+                namespace: "response_flow.resource",
                 type: TemplateType.DictionaryBlock,
                 role: SemanticRole.Node,
                 properties: {
@@ -260,7 +260,7 @@ export default defineComponent({
             },
             {
                 id: "response_action", //response action
-                namespace: "attack_flow.response",
+                namespace: "response_flow.response_action",
                 type: TemplateType.DictionaryBlock,
                 role: SemanticRole.Node,
                 properties: {
@@ -282,6 +282,7 @@ export default defineComponent({
                         value: null
                     },
                     title: {type: PropertyType.String},
+                    subtitle: {type: PropertyType.String},
                     id: {type: PropertyType.String},
                     description: {type: PropertyType.String},
                     author: {type: PropertyType.String},
@@ -293,7 +294,115 @@ export default defineComponent({
                 },
                 anchor_template: "@__builtin__anchor",
                 style: DarkTheme.DictionaryBlock({head: {...Colors.Blue}})
-            }
+            },
+            {
+                id: "start",
+                namespace: "operators.START",
+                type: TemplateType.TextBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    operator: {
+                        type: PropertyType.String,
+                        value: "START",
+                        is_primary: true,
+                        is_visible: false,
+                        is_editable: false,
+                    }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.TextBlock({ ...Colors.Gray, horizontal_padding: 35 })
+            },
+            {
+                id: "parallel",
+                namespace: "operators.PARALLEL",
+                type: TemplateType.TextBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    operator: {
+                        type: PropertyType.String,
+                        value: "PARALLEL",
+                        is_primary: true,
+                        is_visible: false,
+                        is_editable: false,
+                    }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.TextBlock({ ...Colors.Red, horizontal_padding: 35 })
+            },
+            {
+                id: "switch",
+                namespace: "operators.SWITCH",
+                type: TemplateType.TextBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    operator: {
+                        type: PropertyType.String,
+                        value: "SWITCH",
+                        is_primary: true,
+                        is_visible: false,
+                        is_editable: false,
+                    }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.TextBlock({ ...Colors.Green, horizontal_padding: 35 })
+            },
+            // {
+            //     id: "case",
+            //     namespace: "operators.CASE_operator",
+            //     type: TemplateType.TextBlock,
+            //     role: SemanticRole.Node,
+            //     properties: {
+            //         operator: {
+            //             type: PropertyType.String,
+            //             value: "CASE",
+            //             is_primary: true,
+            //             is_visible: false,
+            //             is_editable: false,
+            //         }
+            //     },
+            //     anchor_template: "@__builtin__anchor",
+            //     style: DarkTheme.TextBlock({ ...Colors.Gray, horizontal_padding: 35 })
+            // },
+            {
+                id: "case",
+                namespace: "operators.CASE",
+                type: TemplateType.DictionaryBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    case : { type: PropertyType.String, is_primary: true, is_required: true }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.DictionaryBlock({ head: { ...Colors.Gray }})
+            },
+            {
+                id: "default-case",
+                namespace: "operators.CASE_DEFAULT",
+                type: TemplateType.DictionaryBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    case : { type: PropertyType.String, value: "DEFAULT", is_primary: true, is_required: true, is_visible: false, is_editable: false, }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.DictionaryBlock({ head: { ...Colors.Gray }})
+            },
+            {
+                id: "end",
+                namespace: "operators.END",
+                type: TemplateType.TextBlock,
+                role: SemanticRole.Node,
+                properties: {
+                    operator: {
+                        type: PropertyType.String,
+                        value: "END",
+                        is_primary: true,
+                        is_visible: false,
+                        is_editable: false,
+                    }
+                },
+                anchor_template: "@__builtin__anchor",
+                style: DarkTheme.TextBlock({ ...Colors.Gray, horizontal_padding: 35 })
+            },
+            
         );
 
         this.execute(new LoadErmack(this.context, {actions, resource}));

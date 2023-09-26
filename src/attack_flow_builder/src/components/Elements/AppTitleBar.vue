@@ -1,7 +1,7 @@
 <template>
   <TitleBar class="app-title-bar-element" :menus="menus" @select="onItemSelect">
     <template v-slot:icon>
-      <span class="logo">AFB</span>
+      <span class="logo">RFP</span>
     </template>
   </TitleBar>
 </template>
@@ -87,7 +87,7 @@ export default defineComponent({
     font-size: 7pt;
     font-weight: 600;
     border-radius: 3px;
-    background: #726de2;
+    background: #245909;
 }
 
 </style>
